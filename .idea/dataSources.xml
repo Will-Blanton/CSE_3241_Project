@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="sample_schema.sqlite" uuid="ea093874-f326-4c34-994a-04f5b605b227">
+    <data-source source="LOCAL" name="bookStoreSchema.sqlite" uuid="ea093874-f326-4c34-994a-04f5b605b227">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:sample_schema.sqlite</jdbc-url>
+      <jdbc-url>jdbc:sqlite:bookStoreSchema.sqlite</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
