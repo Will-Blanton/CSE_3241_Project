@@ -1,0 +1,5 @@
+The SQL files in the Data directory contain the insert statements for all the data that is supposed to be in the tables that they are.
+
+To use to insert into the database either:
+-copy and paste the insert code for each table into the database console and run
+-OR open the files in dataGrip and run them
