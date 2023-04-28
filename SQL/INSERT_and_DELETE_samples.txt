@@ -9,3 +9,47 @@ VALUES     	('email@hotmail.com', 'Fred', 'Jones');
 
 INSERT INTO 	BOOK (ISBN, genre, releaseYear, size, discount, title, price, pubId)
 VALUES     	(0140447920, 'Classic Literature', 1869, 50, 0, 'The Idiot', 15.99, 100);
+
+-- delete author
+DELETE FROM AUTHOR WHERE id = 100;
+
+-- delete publisher
+DELETE FROM BOOK WHERE pubId = 100;
+DELETE FROM PUBLISHER WHERE id = 100;
+
+-- delete customer
+DELETE FROM "ORDER" WHERE customerEmail = 'email@hotmail.com';
+DELETE FROM CUSTOMER WHERE email = 'email@hotmail.com';
+
+-- delete book
+DELETE FROM BOOK WHERE ISBN = 0140447920;
+
+
+-- the rest of the deletes are examples so the rows they delete do not exist in the database yet.
+DELETE FROM "Order" WHERE id = 1234;
+
+DELETE FROM Customer WHERE Email = 'jane.doe@example.com';
+
+DELETE FROM Review WHERE CustomerEmail = 'jane.doe@example.com';
+
+DELETE FROM Customer_Phone WHERE CustomerEmail = 'jane.doe@example.com';
+
+DELETE FROM Employee_Phone WHERE essn = '123-45-6789';
+
+DELETE FROM Employee WHERE SSN = '123-45-6789';
+
+DELETE FROM Location WHERE id= 456;
+
+DELETE FROM Pub_Phone WHERE PubId = 123 AND PhoneNumber = '555-555-1212';
+DELETE FROM Publisher WHERE id = 123;
+DELETE FROM Location WHERE id = 789;
+
+DELETE FROM Warehouse WHERE id = 456;
+
+DELETE FROM Wishlist WHERE customerEmail = 'jane.doe@example.com' AND Name = 'My Wishlist';
+
+DELETE FROM Book WHERE ISBN = '1234567890';
+
+DELETE FROM Author WHERE id = 123;
+
+DELETE FROM Company_Account WHERE Name = 'Marketing';
