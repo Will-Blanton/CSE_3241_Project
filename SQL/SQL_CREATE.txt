@@ -200,3 +200,26 @@ CREATE TABLE WISHLIST_CONTAINS (
   FOREIGN KEY (customerEmail) REFERENCES CUSTOMER (email) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (name) REFERENCES WISHLIST (name) ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+CREATE INDEX idx_ISBN ON Books (ISBN);
+
+CREATE INDEX idx_orderDate ON "Order" (orderDate);
+
+CREATE VIEW total_books_purchased_by_customer AS
+SELECT email, COUNT(ISBN) AS books_purchased
+FROM Customer, "Order", Book_order
+WHERE Customer.email = "Order".customerEmail AND "Order".id = Book_order.orderId
+GROUP BY Customer.email
+
+CREATE VIEW author_book_sales AS
+SELECT fname, Count(Book.ISBN) AS total_sold
+FROM Book, Author, Book_Author, Book_Order
+WHERE Author.id = Book_Author.authId AND Book.ISBN = Book_Author.ISBN AND Book.ISBN = Book_Order.ISBN
+GROUP BY fname
+ORDER BY COUNT(Book.ISBN) DESC
+
+CREATE VIEW discounted_books_on_wishlist AS
+SELECT DISTINCT email, title, Book.discount
+FROM Book, Wishlist_Contains, Book_Order, "Order", Customer
+WHERE Book.discount > 0 AND Book.ISBN = Wishlist_Contains.ISBN AND Book.ISBN = Book_Order.ISBN AND Book_Order.orderId = "Order".id AND "Order".customerEmail = Customer.email
+
