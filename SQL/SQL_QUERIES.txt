@@ -1,0 +1,162 @@
+a.	Find the titles of all books by Pratchett that cost less than $10
+
+SELECT Title
+FROM Book, Author, Book_Author
+WHERE fname = 'Pratchett' AND price < 10 AND Book.ISBN = Book_Author.ISBN AND Book_Author.authId= Author.id
+
+
+b.   	Give all the titles and their dates of purchase made by a single customer (you choose how to designate the customer)
+
+SELECT Title, orderDate
+FROM Customer, Book, Book_Order, "Order"
+WHERE email = 'Bowers858@gmail.com' AND Customer.email = "Order".customerEmail AND "Order".id = Book_Order.orderId AND Book_Order.ISBN = Book.ISBN
+
+
+c.   	Find the titles and ISBNs for all books with less than 5 copies in stock
+
+SELECT Title, Book.ISBN
+FROM Book, Stored
+WHERE bCount < 5 AND Book.ISBN = Stored.ISBN
+
+
+d.   	Give all the customers who purchased a book by Pratchett and the titles of Pratchett books they purchased
+
+SELECT email, Title
+FROM "Order", Customer, Book, Book_Author, Book_Order, Author
+WHERE Author.fname = 'Pratchett' AND Customer.email = "Order".customerEmail AND "Order".id = Book_Order.orderId AND Book_Order.ISBN = Book.ISBN AND Book.ISBN = Book_Author.ISBN AND Book_Author.authId = Author.id
+
+
+e.   	Find the total number of books purchased by a single customer (you choose how to designate the customer)
+
+SELECT COUNT(ISBN) AS total_books_purchased
+FROM Customer, "Order", Book_Order
+WHERE email = 'Bowers858@gmail.com' AND Customer.email = "Order".customerEmail AND "Order".id = Book_order.orderId
+
+
+f.        Find the customer who has purchased the most books and the total number of books they have purchased 
+
+SELECT Customer.email, COUNT(Book_order.ISBN) AS total_books_purchased
+FROM Customer, "Order", Book_order
+WHERE Customer.email = "Order".customerEmail AND "Order".id = Book_order.orderId
+GROUP BY Customer.email
+ORDER BY total_books_purchased DESC
+LIMIT 1
+
+g. 	Give the average hours worked of all the employees and their location id
+
+SELECT AVG(Hworked) AS avg_hours_worked
+FROM Employee, Location
+WHERE Employee.locId = Location.id
+GROUP BY Location.id
+
+	
+h. 	Give all the customer_ids and names of customers who wrote a review with a score that is >= 4 
+
+SELECT email, Fname, Lname
+FROM Review, Customer
+WHERE Review.score >= 4 AND Review.customerEmail = Customer.email
+
+
+i. 	Give all the emails and the name of their wishlist who have a certain book in their wishlist
+
+SELECT email, name
+FROM Customer, Book, Wishlist_Contains
+WHERE Title = 'Google Hacks' AND Customer.email = Wishlist_Contains.customerEmail AND Wishlist_Contains.ISBN = Book.ISBN
+
+
+j.	Provide a list of customer names, along with the total dollar amount each customer has spent.
+	
+SELECT Fname, Lname, SUM(Price) AS total_spent
+FROM Customer, Book, "Order", Book_Order
+WHERE Customer.email = "Order".customerEmail AND "Order".id = Book_Order.orderId AND Book_Order.ISBN = Book.ISBN
+GROUP BY email
+
+
+k.	Provide a list of customer names and e-mail addresses for customers who have spent more than the average customer.
+
+SELECT Fname, Lname, email
+FROM Customer, Book, "Order", Book_Order
+WHERE Customer.email = "Order".customerEmail AND "Order".id = Book_Order.orderId AND Book_Order.ISBN = Book.ISBN
+GROUP BY email
+HAVING SUM(Price) > (
+   SELECT AVG(total_spent)
+   FROM (
+       SELECT SUM(Price) AS total_spent
+       FROM Customer, Book, "Order", Book_Order
+       WHERE Customer.email = "Order".customerEmail AND "Order".id = Book_Order.orderId AND Book_Order.ISBN = Book.ISBN
+       GROUP BY email
+   )
+)
+
+
+
+l.	Provide a list of the titles in the database and associated total copies sold to customers, sorted from the title that has sold the most individual copies to the title that has sold the least.
+
+SELECT Title, COUNT(*)
+FROM Book, Book_Order
+WHERE Book.ISBN = Book_Order.ISBN
+GROUP BY Title
+ORDER BY COUNT(*) DESC
+
+
+m.	Provide a list of the titles in the database and associated dollar totals for copies sold to customers, sorted from the title that has sold the highest dollar amount to the title that has sold the smallest.
+
+SELECT Title, COUNT(*) * Price
+FROM Book, Book_Order
+WHERE Book.ISBN = Book_Order.ISBN
+GROUP BY Title
+ORDER BY COUNT(*) DESC
+
+
+n.	Find the most popular author in the database (i.e. the one who has sold the most books)
+
+SELECT name, COUNT(*) AS number_of_books_sold
+FROM Book, Author, Book_Author, Book_Order
+WHERE Author.id = Book_Author.authorId AND Book.ISBN = Book_Author.ISBN AND Book.ISBN = Book_Order.ISBN
+GROUP BY Name
+ORDER BY COUNT(*) DESC
+LIMIT 1
+
+
+o.	Find the most profitable author in the database for this store (i.e. the one who has brought in the most money)
+
+SELECT name, SUM(Price) AS revenue
+FROM Book, Author, Book_Author, Book_Order
+WHERE Author.id = Book_Author.authorId AND Book.ISBN = Book_Author.ISBN AND Book.ISBN = Book_Order.ISBN
+GROUP BY name
+ORDER BY revenue DESC
+LIMIT 1
+
+p.	Provide a list of customer information for customers who purchased anything written by the most profitable author in the database.
+
+SELECT Customer.Fname, CustomerLname, email
+FROM Customer, Author, Book_Author, Book_Order, Book, "Order"
+WHERE Author.id = Book_Author.authId AND Book.ISBN = Book_Author.ISBN AND Book.ISBN = Book_Order.ISBN AND Book_Order.orderId = "Order".id AND Customer.email = "Order".customerEmail AND Author.fname IN (
+   SELECT fname
+   FROM Book, Author, Book_Author, Book_Order
+   WHERE Author.id = Book_Author.authId AND Book.ISBN = Book_Author.ISBN AND Book.ISBN = Book_Order.ISBN
+   GROUP BY name
+   ORDER BY SUM(Price) DESC
+   LIMIT 1
+)
+
+	
+q.	Provide the list of authors who wrote the books purchased by the customers who have spent more than the average customer.
+
+SELECT DISTINCT fname
+FROM Book, Author, Book_Author, Book_Order, "Order", Customer
+WHERE Author.id = Book_Author.authId AND Book.ISBN = Book_Author.ISBN AND Book.ISBN = Book_Order.ISBN AND Book_Order.OrderId = "Order".id AND email IN (
+  SELECT email
+   FROM Customer, Book, "Order", Book_Order
+   WHERE Customer.email = "Order".customerEmail AND "Order".id = Book_Order.orderId AND Book_Order.ISBN = Book.ISBN
+   GROUP BY email
+   HAVING SUM(Price) > (
+      SELECT AVG(total_spent)
+      FROM (
+          SELECT SUM(Price) AS total_spent
+          FROM Customer, Book, "Order", Book_Order
+          WHERE Customer.email = "Order".customerEmail AND "Order".id = Book_Order.orderId AND Book_Order.ISBN = Book.ISBN
+          GROUP BY email
+      )
+   )
+)
